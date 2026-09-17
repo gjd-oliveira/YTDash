@@ -46,7 +46,7 @@ public class App extends Application {
 
         // TEXT FIELD
         TextField ytURL = new TextField();
-        ytURL.setPrefSize(260, 25);
+        ytURL.setPrefSize(230, 25);
         ytURL.setPromptText("Cole a URL do vídeo aqui...");
 
         // DROPDOWN FORMATO
@@ -68,21 +68,28 @@ public class App extends Application {
         download.setPrefSize(250, 30);
         download.setText("Download");
 
+        // BOTÃO VERIFICAR URL
+        Button verifyURLButton = new Button("✓");
+        verifyURLButton.setPrefSize(50, 50);
+
         // PROGRESS BAR
         ProgressBar downloadBar = new ProgressBar(0);
         downloadBar.setPrefSize(300, 20);
 
         // CRIAR O DOWNLOAD SERVICE
         DownloadService downloadService = new DownloadService();
+        VideoService videoService = new VideoService();
 
         // CRIAR O CONTROLADOR  
         Controller controller = new Controller(
         ytURL,
         dropdownFormat,
         dropdownQuality,
+        verifyURLButton,
         download,
         downloadBar,
-        downloadService
+        downloadService,
+        videoService
         );
 
 
@@ -124,6 +131,9 @@ public class App extends Application {
         download.setLayoutX(65);
         download.setLayoutY(375);
 
+        verifyURLButton.setLayoutX(330);
+        verifyURLButton.setLayoutY(147);
+
         downloadBar.setLayoutX(40);
         downloadBar.setLayoutY(500);
 
@@ -142,6 +152,7 @@ public class App extends Application {
             dropdownFormat,
             dropdownQuality,
             download,
+            verifyURLButton,
             downloadBar
         );
 

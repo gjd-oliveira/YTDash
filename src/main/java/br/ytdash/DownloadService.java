@@ -39,10 +39,9 @@ public class DownloadService {
 
         download.directory(new File(downloads));
 
-        Process processo = download.start();
+        Process ytdlpProcess = download.start();
 
-        Scanner ytdlpInput =
-        new Scanner(processo.getInputStream());
+        Scanner ytdlpInput = new Scanner(ytdlpProcess.getInputStream());
 
         while (ytdlpInput.hasNextLine()) {
 
@@ -59,7 +58,7 @@ public class DownloadService {
             }
         }
 
-        processo.waitFor();
+        ytdlpProcess.waitFor();
 
         }
 
