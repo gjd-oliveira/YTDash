@@ -1,0 +1,98 @@
+/* Fundo principal da aplicação */
+.root {
+    -fx-background-color: linear-gradient(
+        from 0% 0% to 100% 100%,
+        #050505 0%,
+        #070707 30%,
+        #090909 50%,
+        #101010 70%,
+        #202020 100%
+    );
+}
+
+/* Título */
+.title {
+    -fx-font-size: 45px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* Subtítulo */
+.subtitle {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+    -fx-text-fill: white;
+}
+
+/* Textos */
+.label-text {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* Caixa de Texto */
+.text-field {
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #888888;
+    -fx-background-color: #303030;
+}
+
+/* Menu Dropdown */
+.combo-box {
+    -fx-background-color: #303030;
+    -fx-text-fill: white;
+}
+
+.combo-box:hover {
+    -fx-background-color: #505050;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: white;
+    -fx-background-color: #303030;
+}
+
+/* Menu Dropdown Pop */
+.combo-box-popup .list-view {
+    -fx-background-color: #303030;
+}
+
+.combo-box-popup .list-cell {
+    -fx-text-fill: white;
+    -fx-background-color: #303030;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: linear-gradient(
+        from 0% 75% to 100% 0%,
+        #303030 0%,
+        #9c9c9c 100%
+    );
+}
+
+/* Botões */
+
+.button {
+    -fx-background-color: #303030;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;                  
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(
+        from 0% 100% to 100% 0%,
+        #505050 0%,
+        #9c9c9c 100%
+    );
+}
+
+.progress-bar .bar{
+    -fx-background-color: #09ff00;
+}
+
+.progress-bar .track {
+    -fx-background-color: #303030;
+}
