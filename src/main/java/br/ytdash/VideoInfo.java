@@ -9,6 +9,7 @@ public class VideoInfo {
     private String id;
     private String title;
     private double duration;
+    private String thumbnail;
     private List<VideoFormat> formats;
 
     public VideoInfo() {
@@ -36,6 +37,14 @@ public class VideoInfo {
 
     public void setDuration(double duration) {
         this.duration = duration;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+}
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
     }
 
     public List<VideoFormat> getFormats() {

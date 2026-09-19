@@ -37,12 +37,14 @@
     -fx-text-fill: white;
     -fx-prompt-text-fill: #888888;
     -fx-background-color: #303030;
+    -fx-background-radius: 8;
 }
 
 /* Menu Dropdown */
 .combo-box {
     -fx-background-color: #303030;
     -fx-text-fill: white;
+    -fx-background-radius: 8;
 }
 
 .combo-box:hover {
@@ -52,11 +54,13 @@
 .combo-box .list-cell {
     -fx-text-fill: white;
     -fx-background-color: #303030;
+    -fx-background-radius: 8;
 }
 
 /* Menu Dropdown Pop */
 .combo-box-popup .list-view {
     -fx-background-color: #303030;
+    -fx-background-radius: 8;
 }
 
 .combo-box-popup .list-cell {
@@ -78,7 +82,8 @@
     -fx-background-color: #303030;
     -fx-text-fill: white;
     -fx-font-size: 15px;
-    -fx-font-weight: bold;                  
+    -fx-font-weight: bold;          
+    -fx-background-radius: 8;        
 }
 
 .button:hover {
@@ -91,8 +96,33 @@
 
 .progress-bar .bar{
     -fx-background-color: #09ff00;
+    -fx-background-radius: 8;
 }
 
 .progress-bar .track {
     -fx-background-color: #303030;
+    -fx-background-radius: 8;
+}
+
+.glass-placeholder {
+    -fx-background-color: rgba(255, 255, 255, 0.03); /* Fundo branco extremamente translúcido */
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.15); /* Cor da borda suave */
+    -fx-border-style: dashed; /* Torna a borda pontilhada/tracejada */
+    -fx-border-width: 1.5;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 15, 0, 0, 4); /* Sombra para dar profundidade */
+}
+
+.title-placeholder {
+    -fx-fill: #202020;
+    -fx-arc-width: 8;
+    -fx-arc-height: 8;
+}
+
+.video-info {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 15, 0, 0, 4);
 }
