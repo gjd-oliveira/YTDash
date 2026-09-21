@@ -32,6 +32,12 @@
     -fx-text-fill: white;
 }
 
+.debug-msg {
+    -fx-font-size: 20px;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
 /* Caixa de Texto */
 .text-field {
     -fx-text-fill: white;

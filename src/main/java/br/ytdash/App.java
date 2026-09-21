@@ -77,7 +77,11 @@ public class App extends Application {
 
         thumbnail.setClip(thumbnailClip);
 
-        videoPlaceholder.getChildren().add(thumbnail);
+        // BUG MESSAGE
+        Label debugMessage = new Label();
+        debugMessage.getStyleClass().add("debug-msg");
+
+        videoPlaceholder.getChildren().addAll(thumbnail, debugMessage);
 
         // TÍTULO DO VÍDEO
         Label videoTitle = new Label();
@@ -189,6 +193,8 @@ public class App extends Application {
         downloadBar.setTranslateX(-25);
         downloadBar.setTranslateY(30);
 
+        
+
 
         // PLACEHOLDERS DO VÍDEO
         Pane videoPlaceholderPanel = new Pane();
@@ -217,7 +223,8 @@ public class App extends Application {
             videoService,
             thumbnail,
             videoTitle,
-            videoDuration
+            videoDuration,
+            debugMessage
         );
 
 

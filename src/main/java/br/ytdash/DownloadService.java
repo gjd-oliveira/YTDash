@@ -14,6 +14,8 @@ public void downloadCommand(
     Consumer<Double> progressCallback
 ) throws Exception {
 
+
+
     ProcessBuilder download;
 
     if (format.equals("mp3")) {
@@ -42,8 +44,6 @@ public void downloadCommand(
         );
     }
 
-    download.redirectErrorStream(true);
-
     String downloads =
         System.getProperty("user.home") + "\\Downloads";
 
@@ -54,17 +54,11 @@ public void downloadCommand(
     Scanner ytdlpInput =
         new Scanner(ytdlpProcess.getInputStream());
 
-    boolean existingFile = false;
-
     while (ytdlpInput.hasNextLine()) {
 
         String line = ytdlpInput.nextLine();
 
         System.out.println(line);
-
-        if (line.contains("has already been downloaded")) {
-            existingFile = true;
-        }
 
         if (line.contains("%")) {
 
@@ -79,14 +73,18 @@ public void downloadCommand(
 
     int exitCode = ytdlpProcess.waitFor();
 
-    System.out.println("Exit code: " + exitCode);
+    if (exitCode != 0) {
 
-    if (existingFile) {
-        System.out.println("Arquivo existente!");
-    } else if (exitCode == 0) {
-        System.out.println("Download Concluído!");
-    } else {
-        System.out.println("ERROR");
+        Scanner errorOutput =
+            new Scanner(ytdlpProcess.getErrorStream());
+
+        StringBuilder error = new StringBuilder();
+
+        while (errorOutput.hasNextLine()) {
+            error.append(errorOutput.nextLine());
+        }
+
+        throw new Exception(error.toString());
     }
 }
 

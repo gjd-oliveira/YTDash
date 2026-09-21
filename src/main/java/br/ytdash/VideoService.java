@@ -31,9 +31,17 @@ public class VideoService {
         int exitCode = process.waitFor();
 
         if (exitCode != 0) {
-            throw new Exception(
-                "Falha ao obter informações do vídeo."
-            );
+
+            Scanner errorOutput =
+                new Scanner(process.getErrorStream());
+
+            StringBuilder error = new StringBuilder();
+
+            while (errorOutput.hasNextLine()) {
+                error.append(errorOutput.nextLine());
+            }
+
+            throw new Exception(error.toString());
         }
 
         ObjectMapper mapper = new ObjectMapper();
@@ -44,15 +52,36 @@ public class VideoService {
 
         JsonNode root = mapper.readTree(json.toString());
 
-        JsonNode thumbnails = root.get("thumbnails");
-
-        System.out.println(thumbnails);
-
         VideoInfo videoInfo = mapper.readValue(
             json.toString(),
             VideoInfo.class
         );
 
+        videoInfo.setThumbnail(
+            getThumbnailJPG(root.get("thumbnails"))
+        );
+
         return videoInfo;
+    }
+
+    // Seleciona a maior thumbnail JPG disponível.
+    public String getThumbnailJPG(JsonNode thumbnails) {
+
+        String thumbURL = null;
+        int sizeThumbnail = 0;
+
+        for (JsonNode thumbnail : thumbnails) {
+            if(thumbnail.has("url")) {
+                if (thumbnail.get("url").asText().contains("jpg")) {
+                    if (thumbnail.has("height")) {
+                        if (sizeThumbnail < thumbnail.get("height").asInt()) {
+                            thumbURL = thumbnail.get("url").asText();
+                            sizeThumbnail = thumbnail.get("height").asInt();
+                        }
+                    }
+                }
+            }
+        }
+        return thumbURL;
     }
 }

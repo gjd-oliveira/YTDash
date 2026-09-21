@@ -1,5 +1,7 @@
 package br.ytdash;
 
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -24,6 +26,7 @@ private String verifiedURL;
 private ImageView thumbnail;
 private Label videoTitle;
 private Label videoDuration;
+private Label debugMessage;
 
 public Controller(
     TextField ytURL,
@@ -36,7 +39,8 @@ public Controller(
     VideoService videoService,
     ImageView thumbnail,
     Label videoTitle,
-    Label videoDuration
+    Label videoDuration,
+    Label debugMessage
 ) {
 
     this.ytURL = ytURL;
@@ -50,6 +54,7 @@ public Controller(
     this.thumbnail = thumbnail;
     this.videoTitle = videoTitle;
     this.videoDuration = videoDuration;
+    this.debugMessage = debugMessage;
 
     verifyURLButton.setVisible(false);
     downloadBar.setVisible(false);
@@ -109,7 +114,7 @@ public Controller(
 public void verifyVideo() {
 
     if (!verifyURL()) {
-        System.out.println("URL inválida");
+        showDebugMessage("URL Inválida");
         return;
     }
 
@@ -158,8 +163,19 @@ public void verifyVideo() {
 
     verifyTask.setOnFailed(event -> {
 
-        System.out.println("Erro ao verificar vídeo");
         verifyTask.getException().printStackTrace();
+        String error = verifyTask.getException().getMessage();
+
+        if (error.contains("This video is unavailable")) {
+        showDebugMessage("Vídeo não encontrado \n       ou indisponível");
+
+        } else if (
+            error.contains("Unable to download API page")
+            && error.contains("Failed to resolve")
+        ) {
+
+            showDebugMessage("Sem conexão com a internet");
+        }
 
         ytURL.setDisable(false);
         verifyURLButton.setDisable(false);
@@ -305,17 +321,36 @@ public void startDownload() {
     });
 
     downloadTask.setOnSucceeded(event -> {
-        download.setDisable(false);
-        ytURL.setDisable(false);
-        dropdownFormat.setDisable(false);
-        dropdownQuality.setDisable(false);
-        verifyURLButton.setDisable(false);
-        downloadBar.setVisible(false);
-        downloadBar.progressProperty().unbind();
-        downloadBar.setProgress(0);
+
+    showDebugMessage("Download Concluído");
+    
+    download.setDisable(false);
+    ytURL.setDisable(false);
+    dropdownFormat.setDisable(false);
+    dropdownQuality.setDisable(false);
+    verifyURLButton.setDisable(false);
+    downloadBar.setVisible(false);
+    downloadBar.progressProperty().unbind();
+    downloadBar.setProgress(0);
     });
 
     downloadTask.setOnFailed(event -> {
+
+    downloadTask.getException().printStackTrace();
+    String error = downloadTask.getException().getMessage();
+
+        if (error.contains("This video is unavailable")) {
+            showDebugMessage("Vídeo ficou indisponível");
+        } else if (
+            error.contains("Unable to download API page")
+            && error.contains("Failed to resolve")
+        ) {
+            showDebugMessage("Sem conexão com a internet");
+        } else {
+            showDebugMessage("Falha no download");
+        }
+
+        // ... reativar os controles
         download.setDisable(false);
         ytURL.setDisable(false);
         dropdownFormat.setDisable(false);
@@ -357,9 +392,27 @@ public String getFormat() {
 // Verifica se a URL possui a estrutura esperada de um vídeo do YouTube.
 public boolean verifyURL() {
 
-    return ytURL.getText().contains(
-        "www.youtube.com/"
+    return ytURL.getText().contains("youtube.com/watch?v=")
+        || ytURL.getText().contains("youtube.com/shorts/")
+        || ytURL.getText().contains("youtube.com/embed/")
+        || ytURL.getText().contains("youtube.com/v/")
+        || ytURL.getText().contains("youtube.com/e/")
+        || ytURL.getText().contains("youtube.com/live/")
+        || ytURL.getText().contains("youtu.be/");
+}
+
+public void showDebugMessage(String message) {
+    debugMessage.setText(message);
+    debugMessage.setVisible(true);
+
+    PauseTransition pause = new PauseTransition(
+        Duration.seconds(5)
     );
 
+    pause.setOnFinished(event -> {
+        debugMessage.setVisible(false);
+    });
+    pause.play();
 }
+
 }
