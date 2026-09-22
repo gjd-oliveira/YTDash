@@ -62,6 +62,9 @@ public class VideoService {
             getThumbnailJPG(root.get("thumbnails"))
         );
 
+        System.out.println(root.get("thumbnails"));
+     
+
         return videoInfo;
     }
 
@@ -70,36 +73,56 @@ public class VideoService {
     // Mantém o formato 16:9
 public String getThumbnailJPG(JsonNode thumbnails) {
 
-    String thumbURL = null;
-    int sizeThumbnail = 0;
+    String best169 = null;
+    int size169 = 0;
+
+    String anyBest = null;
+    int anySize = 0;
 
     for (JsonNode thumbnail : thumbnails) {
 
-        if (thumbnail.has("url") &&
-            thumbnail.has("width") &&
-            thumbnail.has("height")) {
+        if (!thumbnail.has("url")) {
+            continue;
+        }
 
-            String url = thumbnail.get("url").asText();
+        String url = thumbnail.get("url").asText();
+        if (!url.contains("jpg") || url.contains("?")) {
+            continue;
+        }
 
-            if (url.contains("jpg") && !url.contains("?")) {
+        int width;
+        int height;
 
-                int width = thumbnail.get("width").asInt();
-                int height = thumbnail.get("height").asInt();
+        if (thumbnail.has("width") && thumbnail.has("height")) {
+            width = thumbnail.get("width").asInt();
+            height = thumbnail.get("height").asInt();
 
-                double ratio = (double) width / height;
+        } else if (url.contains("maxresdefault")) {
+            // URL "adivinhada" pelo yt-dlp, sem dimensão confirmada -
+            // mas quando existe, maxresdefault.jpg é sempre 1280x720 (16:9)
+            width = 1280;
+            height = 720;
 
-                if (Math.abs(ratio - (16.0 / 9.0)) < 0.01) {
+        } else {
+            // Sem dimensão e sem convenção 16:9 conhecida
+            // (hqdefault/sddefault/default não são 16:9) - não dá pra confiar
+            continue;
+        }
 
-                    if (width * height > sizeThumbnail) {
+        int area = width * height;
+        double ratio = (double) width / height;
 
-                        thumbURL = url;
-                        sizeThumbnail = width * height;
-                    }
-                }
-            }
+        if (area > anySize) {
+            anyBest = url;
+            anySize = area;
+        }
+
+        if (Math.abs(ratio - (16.0 / 9.0)) < 0.01 && area > size169) {
+            best169 = url;
+            size169 = area;
         }
     }
 
-    return thumbURL;
+    return best169 != null ? best169 : anyBest;
 }
 }

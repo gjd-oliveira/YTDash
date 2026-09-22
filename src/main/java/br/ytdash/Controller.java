@@ -154,17 +154,23 @@ public void verifyVideo() {
 
         videoDuration.setText("Duração: " + duration);
 
-        Image image = new Image(videoInfo.getThumbnail(), true);
+        String thumbURL = videoInfo.getThumbnail();
 
+        if (thumbURL == null) {
+            thumbnail.setImage(null); // ou uma imagem placeholder
+            showDebugMessage("Prévia indisponível");
+        } else {
+        Image image = new Image(videoInfo.getThumbnail(), true);
+        
         image.errorProperty().addListener((obs, oldValue, newValue) -> {
     if (newValue) {
         System.out.println("ERRO AO CARREGAR THUMBNAIL");
         System.out.println(image.getException());
         }
     });
-
         thumbnail.setImage(image);
 
+    }
         System.out.println(videoInfo.getThumbnail());
 
         populateFormatMenu(videoInfo);
