@@ -68,8 +68,7 @@ public Controller(
             dropdownFormat.getItems().clear();
             dropdownQuality.getItems().clear();
 
-            dropdownFormat.setDisable(true);
-            dropdownQuality.setDisable(true);
+            ControlsManager.setDisabled(true, dropdownFormat, dropdownQuality);
         }
 
         verifyDownload();
@@ -81,9 +80,13 @@ public Controller(
 
         if (newValue == null) {
             dropdownQuality.getItems().clear();
-            dropdownQuality.setDisable(true);
+
+            ControlsManager.setDisabled(true, dropdownQuality);
+
         } else {
-            dropdownQuality.setDisable(false);
+
+            ControlsManager.setDisabled(false, dropdownQuality);
+
             populateQualityMenu(videoInfo);
         }
 
@@ -96,8 +99,7 @@ public Controller(
     });
 
     // Initial state
-    dropdownQuality.setDisable(true);
-    download.setDisable(true);
+    ControlsManager.setDisabled(true, dropdownQuality, download);
 
     // Verify URL
     verifyURLButton.setOnAction(event -> {
@@ -129,14 +131,13 @@ public void verifyVideo() {
     };
 
     verifyTask.setOnRunning(event -> {
-        ytURL.setDisable(true);
-        verifyURLButton.setDisable(true);
+
+        ControlsManager.setDisabled(true,ytURL,verifyURLButton);
     });
 
     verifyTask.setOnSucceeded(event -> {
 
-        ytURL.setDisable(false);
-        verifyURLButton.setDisable(false);
+        ControlsManager.setDisabled(false, ytURL, verifyURLButton);
 
         videoInfo = verifyTask.getValue();
 
@@ -154,6 +155,14 @@ public void verifyVideo() {
         videoDuration.setText("Duração: " + duration);
 
         Image image = new Image(videoInfo.getThumbnail(), true);
+
+        image.errorProperty().addListener((obs, oldValue, newValue) -> {
+    if (newValue) {
+        System.out.println("ERRO AO CARREGAR THUMBNAIL");
+        System.out.println(image.getException());
+        }
+    });
+
         thumbnail.setImage(image);
 
         System.out.println(videoInfo.getThumbnail());
@@ -167,18 +176,19 @@ public void verifyVideo() {
         String error = verifyTask.getException().getMessage();
 
         if (error.contains("This video is unavailable")) {
-        showDebugMessage("Vídeo não encontrado \n       ou indisponível");
+            showDebugMessage("Vídeo não encontrado \n       ou indisponível");
 
         } else if (
             error.contains("Unable to download API page")
             && error.contains("Failed to resolve")
         ) {
-
             showDebugMessage("Sem conexão com a internet");
+
+        } else {
+            showDebugMessage("Falha ao verificar vídeo");
         }
 
-        ytURL.setDisable(false);
-        verifyURLButton.setDisable(false);
+        ControlsManager.setDisabled(false, ytURL, verifyURLButton);
     });
 
     Thread verifyThread = new Thread(verifyTask);
@@ -195,9 +205,10 @@ public void verifyDownload() {
         dropdownFormat.getValue() == null ||
         dropdownQuality.getValue() == null
     ) {
-        download.setDisable(true);
+        ControlsManager.setDisabled(true, download);
+
     } else {
-        download.setDisable(false);
+        ControlsManager.setDisabled(false, download);
     }
 }
 
@@ -278,8 +289,9 @@ public void populateFormatMenu(VideoInfo videoInfo) {
         dropdownFormat.getItems().add("MP3");
     }
 
-    dropdownFormat.setDisable(
-        dropdownFormat.getItems().isEmpty()
+    ControlsManager.setDisabled(
+        dropdownFormat.getItems().isEmpty(),
+        dropdownFormat
     );
 }
 
@@ -303,8 +315,11 @@ public void startDownload() {
                 url,
                 format,
                 quality,
-                progresso -> {
-                    updateProgress(progresso, 1);
+                progress -> {
+                    updateProgress(progress, 1);
+                },
+                () -> {
+                    updateMessage("has already been downloaded");
                 }
             );
 
@@ -313,49 +328,66 @@ public void startDownload() {
     };
 
     downloadTask.setOnRunning(event -> {
-        download.setDisable(true);
-        ytURL.setDisable(true);
-        dropdownFormat.setDisable(true);
-        dropdownQuality.setDisable(true);
-        verifyURLButton.setDisable(true);
+
+        ControlsManager.setDisabled(
+            true,
+            download,
+            ytURL,
+            dropdownFormat,
+            dropdownQuality,
+            verifyURLButton
+        );
     });
 
     downloadTask.setOnSucceeded(event -> {
 
-    showDebugMessage("Download Concluído");
-    
-    download.setDisable(false);
-    ytURL.setDisable(false);
-    dropdownFormat.setDisable(false);
-    dropdownQuality.setDisable(false);
-    verifyURLButton.setDisable(false);
-    downloadBar.setVisible(false);
-    downloadBar.progressProperty().unbind();
-    downloadBar.setProgress(0);
+        if ("has already been downloaded".equals(downloadTask.getMessage())) {
+            showDebugMessage("Arquivo já existe");
+        } else {
+            showDebugMessage("Download Concluído");
+        }
+
+        ControlsManager.setDisabled(
+            false,
+            download,
+            ytURL,
+            dropdownFormat,
+            dropdownQuality,
+            verifyURLButton
+        );
+
+        downloadBar.setVisible(false);
+        downloadBar.progressProperty().unbind();
+        downloadBar.setProgress(0);
     });
 
     downloadTask.setOnFailed(event -> {
 
-    downloadTask.getException().printStackTrace();
-    String error = downloadTask.getException().getMessage();
+        downloadTask.getException().printStackTrace();
+        String error = downloadTask.getException().getMessage();
 
         if (error.contains("This video is unavailable")) {
             showDebugMessage("Vídeo ficou indisponível");
+
         } else if (
             error.contains("Unable to download API page")
             && error.contains("Failed to resolve")
         ) {
             showDebugMessage("Sem conexão com a internet");
+
         } else {
             showDebugMessage("Falha no download");
         }
 
-        // ... reativar os controles
-        download.setDisable(false);
-        ytURL.setDisable(false);
-        dropdownFormat.setDisable(false);
-        dropdownQuality.setDisable(false);
-        verifyURLButton.setDisable(false);
+        ControlsManager.setDisabled(
+            false,
+            download,
+            ytURL,
+            dropdownFormat,
+            dropdownQuality,
+            verifyURLButton
+        );
+
         downloadBar.setVisible(false);
         downloadBar.progressProperty().unbind();
         downloadBar.setProgress(0);
@@ -413,6 +445,6 @@ public void showDebugMessage(String message) {
         debugMessage.setVisible(false);
     });
     pause.play();
-}
 
+}
 }

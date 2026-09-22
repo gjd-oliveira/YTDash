@@ -11,10 +11,9 @@ public void downloadCommand(
     String url,
     String format,
     String quality,
-    Consumer<Double> progressCallback
+    Consumer<Double> progressCallback,
+    Runnable existingFileCallback
 ) throws Exception {
-
-
 
     ProcessBuilder download;
 
@@ -49,6 +48,8 @@ public void downloadCommand(
 
     download.directory(new File(downloads));
 
+    download.redirectErrorStream(true);
+
     Process ytdlpProcess = download.start();
 
     Scanner ytdlpInput =
@@ -57,8 +58,11 @@ public void downloadCommand(
     while (ytdlpInput.hasNextLine()) {
 
         String line = ytdlpInput.nextLine();
-
         System.out.println(line);
+
+        if (line.contains("has already been downloaded")) {
+            existingFileCallback.run();
+        }
 
         if (line.contains("%")) {
 
@@ -89,7 +93,7 @@ public void downloadCommand(
 }
 
 // Extrai a porcentagem de progresso exibida pelo yt-dlp.
-public String extractPercent(String line) {
+public static String extractPercent(String line) {
 
     int startPercent = line.indexOf("]") + 1;
     int endPercent = line.indexOf("%");

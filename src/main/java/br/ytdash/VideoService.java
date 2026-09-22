@@ -1,7 +1,6 @@
 package br.ytdash;
 
 import java.util.Scanner;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -16,6 +15,8 @@ public class VideoService {
             "--dump-single-json",
             url
         );
+
+        videoProcess.redirectErrorStream(true);
 
         Process process = videoProcess.start();
 
@@ -64,24 +65,41 @@ public class VideoService {
         return videoInfo;
     }
 
-    // Seleciona a maior thumbnail JPG disponível.
-    public String getThumbnailJPG(JsonNode thumbnails) {
+    // Seleciona a maior thumbnail JPG disponível seguindo critérios de maior height e maior widht
+    // SE o URL for jpg e não conter "?""
+    // Mantém o formato 16:9
+public String getThumbnailJPG(JsonNode thumbnails) {
 
-        String thumbURL = null;
-        int sizeThumbnail = 0;
+    String thumbURL = null;
+    int sizeThumbnail = 0;
 
-        for (JsonNode thumbnail : thumbnails) {
-            if(thumbnail.has("url")) {
-                if (thumbnail.get("url").asText().contains("jpg")) {
-                    if (thumbnail.has("height")) {
-                        if (sizeThumbnail < thumbnail.get("height").asInt()) {
-                            thumbURL = thumbnail.get("url").asText();
-                            sizeThumbnail = thumbnail.get("height").asInt();
-                        }
+    for (JsonNode thumbnail : thumbnails) {
+
+        if (thumbnail.has("url") &&
+            thumbnail.has("width") &&
+            thumbnail.has("height")) {
+
+            String url = thumbnail.get("url").asText();
+
+            if (url.contains("jpg") && !url.contains("?")) {
+
+                int width = thumbnail.get("width").asInt();
+                int height = thumbnail.get("height").asInt();
+
+                double ratio = (double) width / height;
+
+                if (Math.abs(ratio - (16.0 / 9.0)) < 0.01) {
+
+                    if (width * height > sizeThumbnail) {
+
+                        thumbURL = url;
+                        sizeThumbnail = width * height;
                     }
                 }
             }
         }
-        return thumbURL;
     }
+
+    return thumbURL;
+}
 }

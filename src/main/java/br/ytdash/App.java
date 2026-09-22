@@ -135,7 +135,6 @@ public class App extends Application {
         header.setSpacing(-15);
         ytdashSubtitle.setTranslateX(40);
 
-
         // URL
         HBox urlPanel = new HBox();
 
@@ -148,7 +147,6 @@ public class App extends Application {
         urlPanel.setSpacing(15);
         ytURLplaceholder.setTranslateY(3);
 
-
         // FORMATO
         VBox formatPanel = new VBox();
 
@@ -158,7 +156,6 @@ public class App extends Application {
         );
 
         dropdownFormatLabel.setTranslateX(15);
-
 
         // QUALIDADE
         VBox qualityPanel = new VBox();
@@ -170,7 +167,6 @@ public class App extends Application {
 
         dropdownQualityLabel.setTranslateX(35);
 
-
         // OPÇÕES
         HBox optionsPanel = new HBox();
 
@@ -180,7 +176,6 @@ public class App extends Application {
         );
 
         optionsPanel.setSpacing(50);
-
 
         // DOWNLOAD
         VBox downloadPanel = new VBox();
@@ -192,9 +187,6 @@ public class App extends Application {
 
         downloadBar.setTranslateX(-25);
         downloadBar.setTranslateY(30);
-
-        
-
 
         // PLACEHOLDERS DO VÍDEO
         Pane videoPlaceholderPanel = new Pane();
@@ -227,13 +219,11 @@ public class App extends Application {
             debugMessage
         );
 
-
         // =========================
         // 3. CONTAINER
         // =========================
 
         Pane box = new Pane();
-
 
         // =========================
         // 4. POSIÇÃO DOS PAINÉIS
@@ -254,7 +244,6 @@ public class App extends Application {
         videoPlaceholderPanel.setLayoutX(35);
         videoPlaceholderPanel.setLayoutY(250);
 
-
         // =========================
         // 5. ADICIONAR PAINÉIS
         // =========================
@@ -267,7 +256,6 @@ public class App extends Application {
             videoPlaceholderPanel
         );
 
-
         // =========================
         // 6. SCENE
         // =========================
@@ -278,7 +266,6 @@ public class App extends Application {
         scene.getStylesheets().add(
             getClass().getResource("/css/styles.css").toExternalForm()
         );
-
 
         // =========================
         // 7. STAGE
@@ -294,6 +281,7 @@ public class App extends Application {
 
         stage.setScene(scene);
 
+        stage.setResizable(false);
 
         // =========================
         // 8. MOSTRAR
